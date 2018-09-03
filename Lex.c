@@ -30,11 +30,12 @@ int main(int argc, char const *argv[]){
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,19}
 						};
 						for (i = 0 ; i <20; i++){
-							for (j=0; j<=24; j++){
+							for (j=0; j<24; j++){
 								printf("%d",Matriz[i][j]);
 							}
 														printf("\n\n");
 						} 
+						printf("\n\n\n\n %d" ,Matriz[19][23]);
 	if ((fptr = fopen("test.txt","r")) == NULL){
 		printf("Error");
 		exit(1);
