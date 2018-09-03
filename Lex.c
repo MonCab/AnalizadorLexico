@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-//Hola1040
+//En esta rama metere la vaina de la tabla extra
 int main(int argc, char const *argv[]){
 //Archivo I/O
 	int errorHandler = 0, currentState = 0, yylineno=0;
