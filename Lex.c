@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 //En esta rama metere la vaina de la tabla extra
 int charToInt(char header){
+	//printf("%c\n",header );
 	if (isdigit(header))
 		return 9;
 	if (isalpha(tolower(header))){
@@ -64,7 +66,7 @@ int charToInt(char header){
 
 int main(int argc, char const *argv[]){
 //Archivo I/O
-	int errorHandler = 0, currentState = 0, yylineno=0, final = -1;
+	int errorHandler = 0, currentState = 0, yylineno=0, final = -1,iterate = 0,j ;
 	FILE* fptr;
 	char *buffer;
 	char nextC, help , yytext[100] = "";
@@ -112,13 +114,68 @@ int main(int argc, char const *argv[]){
 	if (buffer == NULL)
 		printf("\n\nError en la lectura del archivo");
 	//Error de memoria en el buffer (aun por programar)
-	//errorHandler = 1;
-	//errorHandling(1);
+	//Carga el texto en memoria
 	fread(buffer, sizeof(char), sizeOfTheFile, fptr);
+
+
+
+	//while (iterate < sizeOfTheFile){
+		j = charToInt(buffer[iterate]);
+		//printf("%d\n",j );
+		//printf("%c\n", buffer[iterate]);
+		//printf("%c\n", buffer[iterate+sizeof(char)]);
+		//printf("%d-%d\n",currentState,charToInt(buffer[iterate]));
+		printf("%d",Matriz[currentState][j]);
+		if (Matriz[currentState][j] != -1){
+			printf("\nHere");
+			currentState = Matriz[currentState][j];
+			printf("%c\n", buffer[iterate]);
+			//strcpy(yytext,buffer[iterate]);
+			printf("\n\nSe Agregó al buffer de lex");
+			iterate += sizeof(char);
+			printf("%d\n", iterate);
+			final = valueOfState[currentState];
+		}else{
+			if (final != -1){
+				//Token Generator Function
+				printf("\n\n Se generó un token");
+				currentState = 0;
+				//return Token
+			}else{
+				//printf("\n\nError Lexico");
+			}
+		}
+	//}
+		printf("Size of File :%li\n", sizeOfTheFile);
+		j = charToInt(buffer[iterate]);
+		//printf("%d\n",j );
+		//printf("%c\n", buffer[iterate]);
+		//printf("%c\n", buffer[iterate+sizeof(char)]);
+		//printf("%d-%d\n",currentState,charToInt(buffer[iterate]));
+		printf("%d",Matriz[currentState][j]);
+		if (Matriz[currentState][j] != -1){
+			currentState = Matriz[currentState][j];
+			printf("%c\n", buffer[iterate]);
+			//strcpy(yytext,buffer[iterate]);
+			printf("\n\nSe Agregó al buffer de lex ");
+			iterate += sizeof(char);
+			printf("%d\n", iterate);
+			final = valueOfState[currentState];
+		}else{
+			if (final != -1){
+				//Token Generator Function
+				printf("\n\n Se generó un token");
+				currentState = 0;
+				//return Token
+			}else{
+				//printf("\n\nError Lexico");
+			}
+		}
+
+
+
+
 	fclose(fptr); 
-
-	//printf("\n\nIn the file : %s\n",buffer);
-
 //Definicion de la estructura/tipo de dato
 	typedef struct Token{
 	int token_id;
