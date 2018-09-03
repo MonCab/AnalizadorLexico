@@ -1,13 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 //En esta rama metere la vaina de la tabla extra
+int charToInt(char header){
+	if (isdigit(header))
+		return 9;
+	if (isalpha(tolower(header))){
+		switch(header){
+			case 'i':
+				return 1;
+			case 'f':
+				return 2;
+			case 'e':
+				return 3;
+			case 'l':
+				return 4;
+			case 's':
+				return 5;
+			case 'v':
+				return 6;
+			case 'r':
+				return 7;
+			default:
+				return 8;
+		}
+	}
+	switch (header){
+		case '@':
+			return 0;
+		case '=':
+			return 10;
+		case '>':
+			return 11;
+		case '<':
+			return 12;
+		case '.':
+			return 13;
+		case '+':
+			return 14;
+		case '-':
+			return 15;
+		case '/':
+			return 16;
+		case '*':
+			return 17;
+		case '!':
+			return 18;
+		case '(':
+			return 19;
+		case ')':
+			return 20;
+		case '{':
+			return 21;
+		case '}':
+			return 22;
+		case ' ':
+			return 23;
+		default:
+			return -1;
+	}
+	return -1;
+}
+
 int main(int argc, char const *argv[]){
 //Archivo I/O
-	int errorHandler = 0, currentState = 0, yylineno=0,i,j;
+	int errorHandler = 0, currentState = 0, yylineno=0, final = -1;
 	FILE* fptr;
 	char *buffer;
-	char nextC, help;
+	char nextC, help , yytext[100] = "";
 	long int sizeOfTheFile;
+	int valueOfState[] ={-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,0,0,-1,-1,-1,-1} ;
 	int Matriz[20][24]= {{1,-1,-1,-1,-1,-1,2,-1,-1,3,3,6,6,4,8,8,8,8,7,9,9,9,9,19},
 						 {-1,10,-1,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 						 {-1,12,12,12,12,12,12,12,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
@@ -29,13 +91,7 @@ int main(int argc, char const *argv[]){
 						 {-1,-1,-1,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,19}
 						};
-						for (i = 0 ; i <20; i++){
-							for (j=0; j<24; j++){
-								printf("%d",Matriz[i][j]);
-							}
-														printf("\n\n");
-						} 
-						printf("\n\n\n\n %d" ,Matriz[19][23]);
+
 	if ((fptr = fopen("test.txt","r")) == NULL){
 		printf("Error");
 		exit(1);
@@ -47,9 +103,6 @@ int main(int argc, char const *argv[]){
 			yylineno++;
 		}
 	};
-	printf("\nNumber of lines %d", yylineno);
-
-
 	//Calcula el numero de bytes que leerá.
 	fseek(fptr, 0L, SEEK_END);
 	sizeOfTheFile = ftell(fptr);
@@ -64,10 +117,7 @@ int main(int argc, char const *argv[]){
 	fread(buffer, sizeof(char), sizeOfTheFile, fptr);
 	fclose(fptr); 
 
-	printf("\n\nIn the file : %s\n",buffer);
-
-
-
+	//printf("\n\nIn the file : %s\n",buffer);
 
 //Definicion de la estructura/tipo de dato
 	typedef struct Token{
