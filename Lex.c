@@ -9,7 +9,6 @@
 
 //Definicion de la estructura/tipo de dato
 typedef struct Token{
-	int token_id;
 	char type[50];
 	char value[100];
 } Token;
@@ -68,6 +67,8 @@ int charToInt(char header){
 		case '}':
 			return 22;
 		case ' ':
+		case '\n':
+		case '\t':
 			return 23;
 		default:
 			return -1;
@@ -116,53 +117,46 @@ Token tokenGenerator(char *yytext, int currentState){
 
 	switch(currentState){
 		case 10:
-			token.token_id = 2;
-			strcpy(token.type, "Identificador");
+			strcpy(token.type, "Constante entera");
 			strcpy(token.value, yytext);
 			break;
 		case 11:
-			if(strchr(yytext, '.') == NULL){
-				token.token_id = 3;
-				strcpy(token.type, "Constante entera");
+			if(strcmp(yytext, "=") == 0){
+				strcpy(token.type, "Operador asignacion");
 				strcpy(token.value, yytext);
 			}else{
-				token.token_id = 4;
-				strcpy(token.type, "Constante decimal");
-				strcpy(token.value, yytext);
-			}
-			break;
-		case 12:
-			if(strchr(yytext, '=') != NULL){
-				token.token_id = 7;
-				strcpy(token.type, "Operador Asignacion");
-				strcpy(token.value, yytext);
-			}else{
-				token.token_id = 5;
 				strcpy(token.type, "Operadores relacionales");
 				strcpy(token.value, yytext);
 			}
 			break;
+		case 12:
+			strcpy(token.type, "Constante decimales");
+			strcpy(token.value, yytext);
+			break;
 		case 13:
-			token.token_id = 8;
-			strcpy(token.type, "Simbolos especiales");
+			strcpy(token.type, "Identificadores");
 			strcpy(token.value, yytext);
 			break;
 		case 14:
-			if(strcmp(yytext, "if") == 0 || strcmp(yytext, "else") == 0){
-				token.token_id = 1;
-				strcpy(token.type, "Palabra reservada");
-				strcpy(token.value, yytext);
-			}
-
+			break;
+		case 15:
 			if(strchr(yytext, '+') != NULL || strchr(yytext, '-') != NULL || strchr(yytext, '/') != NULL || strchr(yytext, '*') != NULL){
-				token.token_id = 6;
 				strcpy(token.type, "Operadores aritmeticos");
 				strcpy(token.value, yytext);
 			}
 
 			if(strcmp(yytext, "=") == 0){
-				token.token_id = 5;
 				strcpy(token.type, "Operadores relacionales");
+				strcpy(token.value, yytext);
+			}
+
+			if(strchr(yytext, '(') != NULL || strchr(yytext, ')') != NULL || strchr(yytext, '{') != NULL || strchr(yytext, '}') != NULL){
+				strcpy(token.type, "Simbolos especiales");
+				strcpy(token.value, yytext);
+			}
+
+			if(strcmp(yytext, "@") == 0){
+				strcpy(token.type, "Palabras reservadas");
 				strcpy(token.value, yytext);
 			}
 			break;
@@ -196,7 +190,7 @@ int main(int argc, char const *argv[]){
 	Token token;
 
 						//{-1,-1,-1,1,-1,1,1,-1,1,1,-1,-1,-1,1,1,1,-1,1,-1,1};
-	int valueOfState[] ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0} ;
+	int valueOfState[] ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0} ;
 
 	/*int Matriz[15][24]= {{1,-1,-1,-1,-1,-1,8,-1,-1,11,12,12,12,2,14,14,14,14,3,14,14,13},
 						 {-1,4,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
@@ -256,7 +250,7 @@ int main(int argc, char const *argv[]){
 			if (final != -1){
 				//Token Generator Function
 				token = tokenGenerator(yytext, currentState);
-				printf("\n\nToken generado: <%s, %s> de clase: %d\n", token.type, token.value, token.token_id);
+				printf("\n\nToken generado: <%s, %s> ", token.type, token.value);
 				//printf("\n\n Se generó un token %s \n" , yytext);
 
 				currentState = 0;
