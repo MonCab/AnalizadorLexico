@@ -114,14 +114,14 @@ int tablaCompacta(int i, int j){
 
 Token tokenGenerator(char *yytext, int currentState){
 	Token token;
-
+	
 	switch(currentState){
 		case 10:
 			strcpy(token.type, "Constante entera");
 			strcpy(token.value, yytext);
 			break;
 		case 11:
-			if(strcmp(yytext, "=") == 0){
+			if(strchr(yytext, '=') != NULL){
 				strcpy(token.type, "Operador asignacion");
 				strcpy(token.value, yytext);
 			}else{
@@ -145,7 +145,7 @@ Token tokenGenerator(char *yytext, int currentState){
 				strcpy(token.value, yytext);
 			}
 
-			if(strcmp(yytext, "=") == 0){
+			if(strchr(yytext, '=') != NULL){
 				strcpy(token.type, "Operadores relacionales");
 				strcpy(token.value, yytext);
 			}
@@ -155,13 +155,13 @@ Token tokenGenerator(char *yytext, int currentState){
 				strcpy(token.value, yytext);
 			}
 
-			if(strcmp(yytext, "@") == 0){
+			if(strchr(yytext, '@') != NULL){
 				strcpy(token.type, "Palabras reservadas");
 				strcpy(token.value, yytext);
 			}
 			break;
-		default:
-			printf("Error en la funcion tokenGenerator\n");
+		//default:
+			//printf("Error en la funcion tokenGenerator\n");
 	}
 
 	return token;
@@ -250,7 +250,7 @@ int main(int argc, char const *argv[]){
 			if (final != -1){
 				//Token Generator Function
 				token = tokenGenerator(yytext, currentState);
-				printf("\n\nToken generado: <%s, %s> ", token.type, token.value);
+				printf("\n\nToken generado: <%s, %s>\n", token.type, token.value);
 				//printf("\n\n Se generó un token %s \n" , yytext);
 
 				currentState = 0;
