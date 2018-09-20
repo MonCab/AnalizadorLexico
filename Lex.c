@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-//En esta rama metere la vaina de la tabla extra
-//falta programar el token generator
+
+//Falta programar el token generator
 //Falta programar el errorHandler
-//falta destapar unas frías.
-//
+//Siempre si faltan las frias.
+//Falta concatenar el buffer yytext para guardar el valor de los tokens.
+
 int charToInt(char header){
 	//printf("%c\n",header );
 	if (isdigit(header))
@@ -84,9 +85,11 @@ int main(int argc, char const *argv[]){
 	int errorHandler = 0, currentState = 0, yylineno=0, final = -1,iterate = 0,j ;
 	FILE* fptr;
 	char *buffer;
-	char nextC, help , yytext[100] = "";
+	char nextC, help , yytext[100];
 	long int sizeOfTheFile;
-	int valueOfState[] ={-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,0,0,-1,-1,-1,-1} ;
+
+						//{-1,-1,-1,1,-1,1,1,-1,1,1,-1,-1,-1,1,1,1,-1,1,-1,1};
+	int valueOfState[] ={-1,-1,-1,0,-1,0,0,-1,0,0,-1,-1,-1,0,0,0,-1,0,-1,0} ;
 	int Matriz[20][24]= {{1,-1,-1,-1,-1,-1,2,-1,-1,3,3,6,6,4,8,8,8,8,7,9,9,9,9,19},
 						 {-1,10,-1,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 						 {-1,12,12,12,12,12,12,12,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
@@ -111,7 +114,6 @@ int main(int argc, char const *argv[]){
 
 	if ((fptr = fopen("test.txt","r")) == NULL){
 		printf("Error");
-		exit(1);
 	}
 	//Calcula numero de lineas para mostrar al detectar errores.
 	while (!feof(fptr)){
@@ -119,7 +121,7 @@ int main(int argc, char const *argv[]){
 		if(help== '\n'){
 			yylineno++;
 		}
-	};
+	}
 	//Calcula el numero de bytes que leerá.
 	fseek(fptr, 0L, SEEK_END);
 	sizeOfTheFile = ftell(fptr);
@@ -128,41 +130,43 @@ int main(int argc, char const *argv[]){
 	buffer = (char*)calloc(sizeOfTheFile, sizeof(char));
 	if (buffer == NULL)
 		printf("\n\nError en la lectura del archivo");
-	//Error de memoria en el buffer (aun por programar)
 
 	//Carga el texto en memoria
 	fread(buffer, sizeof(char), sizeOfTheFile, fptr);
+
+
 	//aquí se genera un ciclo infinito
-	//while (iterate < sizeOfTheFile){
+	while (iterate <= sizeOfTheFile){
 		//j se usa para simplificar la notación Matriz[][]
 		j = charToInt(buffer[iterate]);
 		if (Matriz[currentState][j] != -1){
 			currentState = Matriz[currentState][j];
-			//Strcpy genera error, falta concatenar el caracter
-			//strcpy(yytext,buffer[iterate]);
-			printf("\n\nSe Agregó al buffer de lex el caracter : %c \n\n", buffer[iterate] );
-			iterate += sizeof(char);
+			printf("\n\nSe Agregó al buffer de lex el caracter : %c \n\n", buffer[iterate]);
+			yytext[strlen(yytext)] =  buffer[iterate];
 			final = valueOfState[currentState];
 		}else{
 			if (final != -1){
 				//Token Generator Function
-				printf("\n\n Se generó un token");
+				printf("\n\n Se generó un token \n");
 				currentState = 0;
-				//return Token
+				//Limpia el arreglo de yytext
+				memset(yytext,0,100);
+				
+				
 			}else{
-				//printf("\n\nError Lexico");
+				printf("\n\nError Lexico\n");
 			}
 		}
-	//}
-
-
-
+		iterate += sizeof(char);
+		
+	}
+	
 
 	fclose(fptr); 
 //Definicion de la estructura/tipo de dato
 	typedef struct Token{
 	int token_id;
-	char type[50];
+	int type;
 	char value[100];
 	} Token;
 
