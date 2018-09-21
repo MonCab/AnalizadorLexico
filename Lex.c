@@ -5,7 +5,15 @@
 
 //Falta programar el token generator
 //Falta programar el errorHandler
-//Siempre si faltan las frias.
+
+
+//Definicion de la estructura/tipo de dato
+typedef struct Token{
+	int token_id;
+	char type[50];
+	char value[100];
+} Token;
+
 int charToInt(char header){
 	//printf("%c\n",header );
 	if (isdigit(header))
@@ -67,6 +75,104 @@ int charToInt(char header){
 	return -1;
 }
 
+int tablaCompacta(int i, int j){
+	//Valor de los elementos no nulos de toda la tabla
+	int Valor[57]={1,2,10,11,11,11,3,15,15,15,15,4,15,15,15,15,
+				14,5,6,7,7,7,7,7,7,7,7,7,12,15,15,8,7,7,7,7,
+				7,7,13,7,7,9,15,10,3,15,12,7,7,7,7,7,7,13,7,7,14};
+
+	//Columna que corresponde a cada elemento del vector Valor
+	int Col[57]={0,6,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,
+	1,3,1,2,3,4,5,6,7,8,9,9,10,2,4,1,2,3,4,5,6,7,8,9,5,3,9,13,10,
+	9,1,2,3,4,5,6,7,8,9,23};
+
+	//Se almacena la posición del vector valor donde comienzan los elementos de cada renglón
+	int Fila[20]={0,17,19,28,29,30,31,32,41,42,43,45,46,47,56,57};
+
+	//Contiene el número de elementos no nulos de cada renglón
+	int Num[16]={17,2,9,1,1,1,1,9,1,1,2,1,1,9,1,0};
+
+	int num, com, k;
+
+	num = Num[i];
+
+	if(num == 0)
+		return -1;
+	else{
+		com = Fila[i];
+		k = 0;
+		while(k < num){
+			if(Col[com+k] == j)
+				return Valor[com + k];
+
+			k++;
+		}
+	}
+	return -1;
+}
+
+Token tokenGenerator(char *yytext, int currentState){
+	Token token;
+
+	switch(currentState){
+		case 10:
+			token.token_id = 2;
+			strcpy(token.type, "Identificador");
+			strcpy(token.value, yytext);
+			break;
+		case 11:
+			if(strchr(yytext, '.') == NULL){
+				token.token_id = 3;
+				strcpy(token.type, "Constante entera");
+				strcpy(token.value, yytext);
+			}else{
+				token.token_id = 4;
+				strcpy(token.type, "Constante decimal");
+				strcpy(token.value, yytext);
+			}
+			break;
+		case 12:
+			if(strchr(yytext, '=') != NULL){
+				token.token_id = 7;
+				strcpy(token.type, "Operador Asignacion");
+				strcpy(token.value, yytext);
+			}else{
+				token.token_id = 5;
+				strcpy(token.type, "Operadores relacionales");
+				strcpy(token.value, yytext);
+			}
+			break;
+		case 13:
+			token.token_id = 8;
+			strcpy(token.type, "Simbolos especiales");
+			strcpy(token.value, yytext);
+			break;
+		case 14:
+			if(strcmp(yytext, "if") == 0 || strcmp(yytext, "else") == 0){
+				token.token_id = 1;
+				strcpy(token.type, "Palabra reservada");
+				strcpy(token.value, yytext);
+			}
+
+			if(strchr(yytext, '+') != NULL || strchr(yytext, '-') != NULL || strchr(yytext, '/') != NULL || strchr(yytext, '*') != NULL){
+				token.token_id = 6;
+				strcpy(token.type, "Operadores aritmeticos");
+				strcpy(token.value, yytext);
+			}
+
+			if(strcmp(yytext, "=") == 0){
+				token.token_id = 5;
+				strcpy(token.type, "Operadores relacionales");
+				strcpy(token.value, yytext);
+			}
+			break;
+		default:
+			printf("Error en la funcion tokenGenerator\n");
+	}
+
+	return token;
+}
+
 int main(int argc, char const *argv[]){
 //Archivo I/O
 	/*
@@ -87,11 +193,12 @@ int main(int argc, char const *argv[]){
 	yytext=(char*)malloc(1*sizeof(char));
 	strcpy(yytext,"");
 	long int sizeOfTheFile;
+	Token token;
 
 						//{-1,-1,-1,1,-1,1,1,-1,1,1,-1,-1,-1,1,1,1,-1,1,-1,1};
 	int valueOfState[] ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0} ;
 
-	int Matriz[15][24]= {{1,-1,-1,-1,-1,-1,8,-1,-1,11,12,12,12,2,14,14,14,14,3,14,14,13},
+	/*int Matriz[15][24]= {{1,-1,-1,-1,-1,-1,8,-1,-1,11,12,12,12,2,14,14,14,14,3,14,14,13},
 						 {-1,4,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,14,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
@@ -106,14 +213,15 @@ int main(int argc, char const *argv[]){
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,14,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,13},
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
-						};
+						};*/
 
 	if ((fptr = fopen("test.txt","r")) == NULL){
 		printf("Error");
 	}
 	//Calcula numero de lineas para mostrar al detectar errores.
 	while (!feof(fptr)){
-	help = fgetc(fptr);
+		help = fgetc(fptr);
+		
 		if(help== '\n'){
 			yylineno++;
 		}
@@ -135,18 +243,21 @@ int main(int argc, char const *argv[]){
 	while (iterate <= sizeOfTheFile){
 		//j se usa para simplificar la notación Matriz[][]
 		j = charToInt(buffer[iterate]);
-		if (Matriz[currentState][j] != -1){
-			currentState = Matriz[currentState][j];
-			printf("\n\nSe Agregó al buffer de lex el caracter : %c \n\n", buffer[iterate]);
-			yytext=(char*)realloc(yytext,sizeof(yytext));
+		//if (Matriz[currentState][j] != -1){
+		if(tablaCompacta(currentState, j) != -1){
+			currentState = tablaCompacta(currentState, j); //Matriz[currentState][j];
+			//printf("\n\nSe Agregó al buffer de lex el caracter : %c \n\n", buffer[iterate]);
 			auxConcat[0] = buffer[iterate];
 			auxConcat[1]='\0';
+			yytext=(char*)realloc(yytext,(sizeof(yytext)+sizeof(buffer[iterate])+sizeof('\0')));
 			strcat(yytext,auxConcat); 
 			final = valueOfState[currentState];
 		}else{
 			if (final != -1){
 				//Token Generator Function
-				printf("\n\n Se generó un token %s \n" , yytext);
+				token = tokenGenerator(yytext, currentState);
+				printf("\n\nToken generado: <%s, %s> de clase: %d\n", token.type, token.value, token.token_id);
+				//printf("\n\n Se generó un token %s \n" , yytext);
 
 				currentState = 0;
 				strcpy(yytext,"");
@@ -162,13 +273,6 @@ int main(int argc, char const *argv[]){
 	
 
 	fclose(fptr); 
-//Definicion de la estructura/tipo de dato
-	typedef struct Token{
-	int token_id;
-	int type;
-	char value[100];
-	} Token;
-
 
 	return 0;
 }
