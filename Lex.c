@@ -77,17 +77,20 @@ int charToInt(char header){
 
 int tablaCompacta(int i, int j){
 	//Valor de los elementos no nulos de toda la tabla
-	int Valor[]={1, 8, 11, 12, 12, 12, 2, 14, 14, 14, 14, 3, 14, 14, 14, 14, 13,
-				4, 5, 11, 14, 6, 7, 14, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
-				10, 9, 9, 9, 9, 9, 9, 9, 9, 10, 9, 9, 11, 14, 13};
+	int Valor[57]={1,2,10,11,11,11,3,15,15,15,15,4,15,15,15,15,
+				14,5,6,7,7,7,7,7,7,7,7,7,12,15,15,8,7,7,7,7,
+				7,7,13,7,7,9,15,10,3,15,12,7,7,7,7,7,7,13,7,7,14};
+
 	//Columna que corresponde a cada elemento del vector Valor
-	int Col[]={0, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-				1, 3, 9, 2, 4, 5, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7,
-				8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 23};
+	int Col[57]={0,6,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,
+	1,3,1,2,3,4,5,6,7,8,9,9,10,2,4,1,2,3,4,5,6,7,8,9,5,3,9,13,10,
+	9,1,2,3,4,5,6,7,8,9,23};
+
 	//Se almacena la posición del vector valor donde comienzan los elementos de cada renglón
-	int Fila[]={0, 17, 19, 20, 21, 22, 24, 25, 33, 41, 42, 43, 44, -1};
+	int Fila[20]={0,17,19,28,29,30,31,32,41,42,43,45,46,47,56,57};
+
 	//Contiene el número de elementos no nulos de cada renglón
-	int Num[]={17, 2, 1, 1, 1, 1, 1, 9, 9, 9, 1, 1, 1, 0};
+	int Num[16]={17,2,9,1,1,1,1,9,1,1,2,1,1,9,1,0};
 
 	int num, com, k;
 
@@ -105,7 +108,7 @@ int tablaCompacta(int i, int j){
 			k++;
 		}
 	}
-
+	return -1;
 }
 
 Token tokenGenerator(char *yytext, int currentState){
@@ -212,7 +215,7 @@ int main(int argc, char const *argv[]){
 						 {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
 						};*/
 
-	if ((fptr = fopen("test2.txt","r")) == NULL){
+	if ((fptr = fopen("test.txt","r")) == NULL){
 		printf("Error");
 	}
 	//Calcula numero de lineas para mostrar al detectar errores.
@@ -243,7 +246,7 @@ int main(int argc, char const *argv[]){
 		//if (Matriz[currentState][j] != -1){
 		if(tablaCompacta(currentState, j) != -1){
 			currentState = tablaCompacta(currentState, j); //Matriz[currentState][j];
-			printf("\n\nSe Agregó al buffer de lex el caracter : %c \n\n", buffer[iterate]);
+			//printf("\n\nSe Agregó al buffer de lex el caracter : %c \n\n", buffer[iterate]);
 			auxConcat[0] = buffer[iterate];
 			auxConcat[1]='\0';
 			yytext=(char*)realloc(yytext,(sizeof(yytext)+sizeof(buffer[iterate])+sizeof('\0')));
