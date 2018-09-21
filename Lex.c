@@ -5,7 +5,7 @@
 
 //Falta programar el token generator
 //Falta programar el errorHandler
-//Siempre si faltan las frias.
+
 
 //Definicion de la estructura/tipo de dato
 typedef struct Token{
